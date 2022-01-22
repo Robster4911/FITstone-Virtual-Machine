@@ -2,7 +2,7 @@
 # Robert Heine, rheine2019@my.fit.edu
 
 # Input should be the name of the instructions file
-# Compiles to a file with the same name as the instructions file, bit with a .bin extension.
+# Compiles to a file with the same name as the instructions file, but with a .bin extension.
 files = input().rstrip().split(" ")
 f_txt = open(files[0], "rt")
 binfile_name = files[0].split(".")
