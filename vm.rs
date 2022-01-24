@@ -17,7 +17,7 @@
  */
 
 // imports
-use std::{io, thread};
+use std::io;
 use std::io::Read;
 
 /*
@@ -126,10 +126,7 @@ fn read_instructions(instruction_vec:&mut Vec<Instruction>){
             convert_to_32(&mut val_big, buff);
             tmp_i.arg_32 = val_big;
          }
-         
-         // debug print statement
-         println!("opcode {}, args {:?}, {}", tmp_i.opcode, tmp_i.reg_args, tmp_i.arg_32);
-         
+
          // push the instruction onto the vector
          instruction_vec.push(tmp_i);
       }
@@ -176,11 +173,6 @@ fn main(){
       // Determine which instruction to
       // execute based on the op code
       
-      // for debugging
-      if i_num > 19 {
-         println!("{} :: {:?} :: {}", i_num, regs, cc);
-      }
-      
       // LOAD
       if instructions[i_num].opcode == 0 {
          regs[R1] = v;
@@ -216,15 +208,23 @@ fn main(){
       }
       // ADD
       else if instructions[i_num].opcode == 4 {
-         regs[R1] = regs[R2] + regs[R3];
+         // if register goes above u32 max value, it overflows back to 0
+         regs[R1] = ((regs[R2] as u64 + regs[R3] as u64) % u32::MAX as u64) as u32;
       }
       // SUB
       else if instructions[i_num].opcode == 5 {
-         regs[R1] = regs[R2] - regs[R3];
+         // if result is going to be negative, underflow to u32 max
+         if regs[R2] < regs[R3] {
+            regs[R1] = ((u32::MAX as u64 + regs[R2] as u64) - regs[R3] as u64) as u32;
+         }
+         else{
+            regs[R1] = regs[R2] - regs[R3];
+         }
       }
       // MUL
       else if instructions[i_num].opcode == 6 {
-         regs[R1] = regs[R2] * regs[R3];
+         // handles overflow in the same way as ADD
+         regs[R1] = ((regs[R2] as u64 * regs[R3] as u64) % u32::MAX as u64) as u32;
       }
       // DIV
       else if instructions[i_num].opcode == 7 {
@@ -291,7 +291,6 @@ fn main(){
    
    // if an error was previously detected, does not print registers
    if is_error == false {
-      println!("{:?}", regs);
+      println!("({}, {}, {}, {}, {}, {}, {}, {})", regs[0], regs[1], regs[2], regs[3], regs[4], regs[5], regs[6], regs[7]);
    }
 }
-
