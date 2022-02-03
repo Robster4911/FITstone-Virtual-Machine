@@ -73,7 +73,7 @@ fn read_instructions(instruction_vec:&mut Vec<Instruction>){
       }
       
       // determines if there is an instruction to read
-      if unsafe has_read_byte.unwrap() == 0 {
+      if has_read_byte.unwrap() == 0 {
          go = false;
       }
       // does not execute if there is nothing to read
